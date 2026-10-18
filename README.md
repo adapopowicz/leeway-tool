@@ -16,7 +16,7 @@ A small browser tool for designing embroidery for the Leeway t-shirt (Stanley/St
 - **Layers**: click a design to add it. Drag to move, corner handle to resize, ◦ handle to rotate (Shift = 15° steps), ▲▼ to stack on top of each other, pick a thread colour, or type exact cm values. *Placement* presets change with the side (front: centre/left/right chest, lower front, sleeve · back: back neck, upper back, centre back, lower back, sleeve).
 - **White areas** in a design can be knock-outs (show the fabric), ignored, or stitched in white.
 - **Hoops**: **10 × 10** or **10 × 23.5** (portrait / landscape). Drag the frame to move it. The status turns red when a layer crosses the edge, and warns if anything is bigger than the largest hoop.
-- **Exports**: **Hoop → SVG** (all layers inside the hoop on the current side, in mm, positioned in the field: 100 × 100 or 100 × 235 mm; each layer is a group named after the design with its thread colour in `data-thread`), **PNG** mockup of the current side, and under *More*: selected layer as true-size SVG, save / open project (.json), clear.
+- **Exports**: **Hoop → SVG for Ember** (all layers inside the hoop on the current side, in mm, positioned in the field: 100 × 100 or 100 × 235 mm; each layer is a group named after the design with its thread colour in `data-thread`), **PNG** mockup of the current side, and under *More*: selected layer as true-size SVG, save / open project (.json), clear.
 - Shortcuts: arrows nudge 1 mm (Shift = 1 cm), ⌘Z / ⇧⌘Z undo/redo, ⌘D duplicate, Delete removes, M measure, Space + drag or wheel to pan / zoom.
 
 ### 2 · Image → ASCII / Pixel

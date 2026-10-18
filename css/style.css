@@ -195,3 +195,4 @@ label > select, label > input[type=number], label > input[type=text] { margin-to
 .stage-side { position: absolute; right: 12px; top: 10px; font-size: 11px; letter-spacing: .2em; color: var(--muted); pointer-events: none; }
 .zoom-float { position: absolute; left: 10px; top: 10px; display: flex; gap: 4px; }
 .zoom-float button { box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
