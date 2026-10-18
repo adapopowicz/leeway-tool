@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leeway · Embroidery Studio</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>LEEWAY</b><span>embroidery studio</span></div>
+  <nav class="tabs">
+    <button data-tab="mockup">Mockup</button>
+    <button data-tab="convert">Image → ASCII / Pixel</button>
+    <button data-tab="draw">Draw</button>
+  </nav>
+  <div class="top-note mono">Blaster 2.0 · M · 67 × 75 cm</div>
+</header>
+
+<!-- ================= MOCKUP ================= -->
+<section class="view" id="view-mockup">
+  <aside class="panel left">
+    <div class="panel-h">Designs <span class="muted" id="lib-count"></span></div>
+    <label class="drop" id="lib-drop">
+      <input type="file" id="lib-file" accept=".svg,image/svg+xml" multiple hidden>
+      <b>+ Import SVG</b><span>or drop files here</span>
+    </label>
+    <p class="hint">Click a design to put it on the shirt. Illustrator artboards import at their real size (1 pt = 0.353 mm).</p>
+    <div class="lib-grid" id="lib-grid"></div>
+  </aside>
+
+  <main class="stage-col">
+    <div class="toolbar">
+      <div class="seg small side-seg" id="side-seg">
+        <button data-v="front" class="on">Front</button>
+        <button data-v="back">Back</button>
+      </div>
+      <div class="group">
+        <button id="m-measure" class="tool-btn" title="Measure (M)">📏 Measure</button>
+        <button id="m-clear" hidden>Clear measures</button>
+      </div>
+      <div class="group">
+        <label class="chk"><input type="checkbox" id="t-thread" checked> Thread look</label>
+        <label class="chk"><input type="checkbox" id="t-grid"> Grid</label>
+        <label class="chk"><input type="checkbox" id="t-dims"> Size guide</label>
+      </div>
+      <div class="group right">
+        <button id="x-png">PNG</button>
+        <button class="accent" id="x-hoop">Hoop → SVG</button>
+        <details class="menu"><summary>More</summary>
+          <div class="menu-b">
+            <button id="x-sel">Selected layer → SVG (true size)</button>
+            <button id="x-save">Save project (.json)</button>
+            <label class="btnlike">Open project…<input type="file" id="x-open" accept=".json,application/json" hidden></label>
+            <button id="x-clear">Clear shirt</button>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="stage-wrap" id="stage-wrap">
+      <svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="stage-side mono" id="stage-side">FRONT</div>
+      <div class="zoom-float">
+        <button class="ib" id="z-out" title="Zoom out">−</button>
+        <button class="ib" id="z-fit" title="Fit shirt">Fit</button>
+        <button class="ib" id="z-hoop" title="Zoom to hoop">Hoop</button>
+        <button class="ib" id="z-in" title="Zoom in">+</button>
+      </div>
+      <div class="stage-hint mono" id="stage-hint">drag to move · corner = resize · ◦ = rotate · wheel = zoom · space+drag = pan · M = measure</div>
+    </div>
+  </main>
+
+  <aside class="panel right">
+    <div class="sec">
+      <div class="panel-h">Shirt</div>
+      <label>Photo
+        <select id="shirt-photo">
+          <option value="fit">Fitted to size guide (to scale)</option>
+          <option value="orig">Original photo (un-stretched)</option>
+        </select>
+      </label>
+      <label id="shirt-calib-wrap" hidden>Scale the original on
+        <select id="shirt-calib">
+          <option value="length">Body length · 75 cm</option>
+          <option value="chest">Chest width · 67 cm</option>
+        </select>
+      </label>
+      <p class="hint" id="shirt-note"></p>
+      <div class="lbl">Colour</div>
+      <div id="shirt-sw"></div>
+    </div>
+    <div class="sec">
+      <div class="panel-h">Hoop</div>
+      <select id="hoop-type"></select>
+      <div class="row2">
+        <button id="hoop-to-sel">Centre on selection</button>
+        <button id="hoop-center">Centre chest</button>
+      </div>
+      <div class="status" id="hoop-status"></div>
+    </div>
+    <div class="sec grow">
+      <div class="panel-h">Layers <span class="muted" id="layers-side">front · top first</span></div>
+      <ol class="layers" id="layers"></ol>
+    </div>
+    <div class="sec" id="props">
+      <div class="panel-h">Selected</div>
+      <div class="empty muted" id="props-empty">Nothing selected</div>
+      <div id="props-body" hidden>
+        <input type="text" id="p-name" class="name-in">
+        <div class="lbl">Thread colour</div>
+        <div id="p-color"></div>
+        <div class="grid2">
+          <label>Width <span class="unit">cm</span><input type="number" id="p-w" step="0.1" min="0.2"></label>
+          <label>Height <span class="unit">cm</span><input type="number" id="p-h" step="0.1" min="0.2"></label>
+          <label>From centre <span class="unit">cm</span><input type="number" id="p-x" step="0.1"></label>
+          <label>Below neckline <span class="unit">cm</span><input type="number" id="p-y" step="0.1"></label>
+          <label>Rotation <span class="unit">°</span><input type="number" id="p-r" step="1"></label>
+          <label>White areas
+            <select id="p-paper">
+              <option value="fabric">Knock-out (fabric)</option>
+              <option value="hide">Ignore</option>
+              <option value="white">White thread</option>
+            </select>
+          </label>
+        </div>
+        <div class="lbl">Placement</div>
+        <div class="chips" id="p-place"></div>
+        <div class="row3">
+          <button id="p-flip">Flip</button>
+          <button id="p-dup">Duplicate</button>
+          <button id="p-del" class="danger">Delete</button>
+        </div>
+        <div class="warn" id="p-warn"></div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- ================= CONVERT ================= -->
+<section class="view" id="view-convert">
+  <aside class="panel left wide">
+    <label class="drop" id="cv-drop">
+      <input type="file" id="cv-file" accept="image/*" hidden>
+      <b>+ Choose image</b><span>or drop / paste (⌘V) an image</span>
+    </label>
+    <div class="seg" id="cv-mode">
+      <button data-v="ascii" class="on">ASCII</button>
+      <button data-v="pixel">Pixel</button>
+    </div>
+
+    <div class="sec">
+      <div class="panel-h">Size</div>
+      <div class="grid2">
+        <label>Hoop<select id="cv-hoop"></select></label>
+        <label>Width <span class="unit">mm</span><input type="number" id="cv-width" value="90" min="10" max="235" step="1"></label>
+      </div>
+      <div class="status mono" id="cv-size"></div>
+    </div>
+
+    <div class="sec">
+      <div class="panel-h">Image</div>
+      <label class="rng">Brightness <input type="range" id="cv-bri" min="-100" max="100" value="0"><output></output></label>
+      <label class="rng">Contrast <input type="range" id="cv-con" min="-100" max="100" value="0"><output></output></label>
+      <label class="rng">Gamma <input type="range" id="cv-gam" min="30" max="300" value="100"><output></output></label>
+      <label class="rng">Background cut <input type="range" id="cv-cut" min="0" max="100" value="8"><output></output></label>
+      <label class="chk"><input type="checkbox" id="cv-auto" checked> Auto levels</label>
+      <label class="chk"><input type="checkbox" id="cv-inv"> Invert (stitch the light parts)</label>
+    </div>
+
+    <div class="sec" id="cv-ascii">
+      <div class="panel-h">ASCII</div>
+      <div class="seg small" id="cv-astyle">
+        <button data-v="ramp" class="on">Density</button>
+        <button data-v="edges">Line art</button>
+        <button data-v="both">Both</button>
+      </div>
+      <label class="rng">Columns <input type="range" id="cv-cols" min="10" max="140" value="38"><output></output></label>
+      <label>Characters
+        <select id="cv-set">
+          <option value=" .:-=+*#%@">Classic  .:-=+*#%@</option>
+          <option value=" .:oO@">Bubbles  .:oO@</option>
+          <option value=" .'`^&quot;,:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&amp;8%B@$">Long ramp (70 chars)</option>
+          <option value=" ._-=:+">Lines  ._-=:+</option>
+          <option value=" .oO0">Dots  .oO0</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </label>
+      <input type="text" id="cv-custom" placeholder="light → dense, e.g.  .:leeway" hidden>
+      <label class="rng">Edge sensitivity <input type="range" id="cv-edge" min="1" max="100" value="45"><output></output></label>
+      <label>Output lettering
+        <select id="cv-glyph">
+          <option value="stroke">Single-line stroke (best for Ember)</option>
+          <option value="text">Text, monospace font</option>
+        </select>
+      </label>
+      <label class="rng">Line weight <input type="range" id="cv-lw" min="2" max="20" value="5"><output></output></label>
+    </div>
+
+    <div class="sec" id="cv-pixel" hidden>
+      <div class="panel-h">Pixel</div>
+      <label class="rng">Pixel size <input type="range" id="cv-px" min="10" max="80" value="25"><output></output></label>
+      <label>Sampling
+        <select id="cv-psample">
+          <option value="mean">Average (tones, photos)</option>
+          <option value="max">Darkest (keeps thin lines)</option>
+        </select>
+      </label>
+      <label>Dithering
+        <select id="cv-dither">
+          <option value="none">None (threshold)</option>
+          <option value="fs">Floyd–Steinberg</option>
+          <option value="atk">Atkinson</option>
+          <option value="bayer">Ordered (Bayer)</option>
+        </select>
+      </label>
+      <label class="rng">Threshold <input type="range" id="cv-thr" min="1" max="99" value="50"><output></output></label>
+      <label>Style
+        <select id="cv-pstyle">
+          <option value="solid">Solid blocks (merged)</option>
+          <option value="outline">Outline (stair-step line)</option>
+          <option value="tiles">Separate tiles</option>
+          <option value="dots">Dots</option>
+          <option value="cross">Cross-stitch ×</option>
+        </select>
+      </label>
+      <label class="rng">Gap / line <input type="range" id="cv-gap" min="0" max="40" value="10"><output></output></label>
+    </div>
+  </aside>
+
+  <main class="cv-main">
+    <div class="toolbar">
+      <div class="group">
+        <span class="lbl-inline">Preview on</span><div id="cv-shirt"></div>
+      </div>
+      <div class="group"><span class="lbl-inline">Thread</span><div id="cv-thread"></div></div>
+    </div>
+    <div class="cv-stage">
+      <div class="cv-src"><img id="cv-src-img" alt=""><div class="muted mono" id="cv-src-info">no image yet</div></div>
+      <div class="cv-out" id="cv-out"><div class="empty muted">Choose an image to start.<br>Tip: high-contrast images with a plain background work best.</div></div>
+    </div>
+    <div class="toolbar bottom">
+      <div class="warn" id="cv-warn"></div>
+      <div class="group right">
+        <button id="cv-copy">Copy text</button>
+        <button id="cv-txt">.txt</button>
+        <button id="cv-png">PNG</button>
+        <button id="cv-svg">SVG (mm)</button>
+        <button class="accent" id="cv-send">Add to mockup →</button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ================= DRAW ================= -->
+<section class="view" id="view-draw">
+  <aside class="panel left">
+    <div class="panel-h">Brush</div>
+    <div class="tools" id="dr-tools">
+      <button data-tool="line" class="on" title="L"><i>⟋</i>Line</button>
+      <button data-tool="stair" title="S"><i>⌐┘</i>Pixel line</button>
+      <button data-tool="pixel" title="P"><i>▦</i>Pixel fill</button>
+      <button data-tool="ascii" title="A"><i>#</i>ASCII</button>
+      <button data-tool="erase" title="E"><i>⌫</i>Eraser</button>
+      <button data-tool="measure" title="M"><i>↔</i>Measure</button>
+    </div>
+    <div class="sec" data-for="line">
+      <label class="rng">Line width <input type="range" id="dr-lw" min="3" max="60" value="8"><output></output></label>
+      <label class="rng">Smoothing <input type="range" id="dr-smooth" min="0" max="100" value="40"><output></output></label>
+    </div>
+    <div class="sec" data-for="stair" hidden>
+      <p class="hint">A single line that only moves in pixel steps: curves become staircases, like the outline in your “%” reference. Stitches as one run line.</p>
+      <label class="rng">Step size <input type="range" id="dr-sstep" min="5" max="60" value="15"><output></output></label>
+      <label class="rng">Line width <input type="range" id="dr-slw" min="2" max="30" value="6"><output></output></label>
+      <label class="chk"><input type="checkbox" id="dr-sdiag"> Allow 45° steps</label>
+    </div>
+    <div class="sec" data-for="measure" hidden>
+      <p class="hint">Drag across the canvas to measure. Hold Shift for straight / 45° lines.</p>
+    </div>
+    <div class="sec" data-for="pixel" hidden>
+      <label class="rng">Pixel size <input type="range" id="dr-px" min="10" max="80" value="25"><output></output></label>
+      <label class="rng">Brush <input type="range" id="dr-pxb" min="1" max="8" value="1"><output></output></label>
+      <label>Export as
+        <select id="dr-pstyle"><option value="solid">Solid blocks</option><option value="outline">Outline (stair-step)</option></select>
+      </label>
+    </div>
+    <div class="sec" data-for="ascii" hidden>
+      <label class="rng">Character height <input type="range" id="dr-ch" min="30" max="150" value="60"><output></output></label>
+      <label>Characters
+        <select id="dr-amode">
+          <option value="auto">Auto: follow the stroke  - | / \ _</option>
+          <option value="seq">Repeat text</option>
+          <option value="one">Single character</option>
+          <option value="rand">Random from set</option>
+        </select>
+      </label>
+      <input type="text" id="dr-atext" value="leeway" placeholder="text / characters">
+      <label class="chk"><input type="checkbox" id="dr-snap" checked> Snap to text grid</label>
+      <label class="rng">Line weight <input type="range" id="dr-alw" min="2" max="20" value="5"><output></output></label>
+    </div>
+    <div class="sec" data-for="erase" hidden>
+      <label class="rng">Eraser size <input type="range" id="dr-er" min="10" max="150" value="40"><output></output></label>
+    </div>
+    <div class="sec">
+      <div class="panel-h">Canvas</div>
+      <label>Hoop<select id="dr-hoop"></select></label>
+      <label class="chk"><input type="checkbox" id="dr-grid" checked> Show grid</label>
+      <label class="drop small"><input type="file" id="dr-under" accept="image/*" hidden><b>Trace image…</b></label>
+      <label class="rng">Trace opacity <input type="range" id="dr-uop" min="0" max="100" value="35"><output></output></label>
+    </div>
+  </aside>
+  <main class="dr-main">
+    <div class="toolbar">
+      <div class="group">
+        <button class="ib" id="dr-undo" title="Undo ⌘Z">↶</button>
+        <button class="ib" id="dr-redo" title="Redo ⇧⌘Z">↷</button>
+        <button id="dr-clear">Clear</button>
+      </div>
+      <div class="group"><span class="lbl-inline">Fabric</span><div id="dr-shirt"></div></div>
+      <div class="group"><span class="lbl-inline">Thread</span><div id="dr-thread"></div></div>
+      <div class="group right">
+        <button id="dr-png">PNG</button>
+        <button id="dr-svg">SVG (mm)</button>
+        <button class="accent" id="dr-send">Add to mockup →</button>
+      </div>
+    </div>
+    <div class="dr-wrap" id="dr-wrap"><canvas id="dr-canvas"></canvas><div class="dr-info mono" id="dr-info"></div></div>
+  </main>
+</section>
+
+<div id="toast"></div>
+
+<script src="assets/shirt.js"></script>
+<script src="designs/designs.js"></script>
+<script src="js/core.js"></script>
+<script src="js/strokefont.js"></script>
+<script src="js/mockup.js"></script>
+<script src="js/convert.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
